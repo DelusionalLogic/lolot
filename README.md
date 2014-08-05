@@ -18,14 +18,14 @@ local Person = class("Person", function() end)
 
 To add functionality to your newly created class you need to place it in the namespace function. This is where the elegance of lolot begins.
 
-To add a new local variable you simply define it within the scope, the same goes with functions. A function will dynamically have a self variable set when called, so there is no need to have it as an argument. You could therefore make a person class that encapsulates a persons age as simply as:
+To add a new local variable you simply define it within the scope, the same goes for functions. A function will dynamically have a self variable set when called, so there is no need to have it as an argument. lolot will also pull the self table into the global environment when when a function is called. This removes most of the redundant self table references, as they are now only required when something local or global hides the variable. All of this is demonstrated in the example below:
 
 ```
 local Person = class("Person", function()
 	age = 0
 
 	function __init__(birthYear)
-		self.age = 2014 - birthYear
+		age = 2014 - birthYear
 	end
 
 	function setAge(age)
@@ -33,20 +33,22 @@ local Person = class("Person", function()
 	end
 
 	function __tostring__()
-		return tostring(self.age)
+		return tostring(age)
 	end
 
 	function printAge()
-		print(self.age)
+		print(age)
 	end
 end)
 ```
 
-Things you might notice if you have worked with other lua class systems is that we don't type the name of the variable before the function definitions, and local instance variables just work. When you declare instance variables you should remember that none of the lua functions are available, so if you need to assign variables values from function calls you should assign them in the constructor.
-
-Another thing you might want to do is take advantage of lua metatable events. lolot redirects all these to methods of the same name, except if follows the python way of symmetry with the underscores. One exception is ```__init__()``` which is the constructor. You should notice that all variables declared globally in the namespace are automatically constructed on instantiation. An example use of the given class would look like:
+If you have worked with any other lua OOP system you might notice that theres no references to the class table. Instead of ```Person:setAge(age)``` it simply becomes ```setAge(age)```, and since it's within the person namespace function lolot knows to treat it as a method. The same goes for variables. The instance variable ```age``` is simply declared in the namespace without explicit identification that it is part of the ```Person``` class. If the variable would otherwise be hidden by either a global or local variable we simply fall back to referencing the ```self``` table, as can be seen in the ```setAge(age)``` method. This example class can be used like this:
 
 ```
 Oscar = Person(2010)
 Oscar:printAge() --> prints 4
+Oscar:setAge(20)
+Oscar:printAge() --> prints 20
 ```
+
+Lua also has support for metamethods. Lolot proxies that functionality out to classes. The naming of all the meta events is nearly identical. lolot suffixes them with two underscores to make them symmetric, only 3 events have been left out ```__index```, ```__newindex```, and ```__mode```. lolot also adds a new metamethod ```__init__``` which is the class constructor. This is called whenever your class is instantiated.

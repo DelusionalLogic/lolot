@@ -36,8 +36,11 @@ end
 
 local function invokeWithSelf(self, f, ...)
 	local oldSelf = _ENV["self"]
+	local oldmt = getmetatable(_ENV)
 	_ENV["self"] = self
+	setmetatable(_ENV, {__index = self, __newindex = self})
 	local retVal = f(...)
+	setmetatable(_ENV, oldmt)
 	_ENV["self"] = oldSelf
 	return retVal
 end
