@@ -6,7 +6,7 @@ lolot
 Usage
 -----
 
-lolot is uses a simple syntax although it does have a few quirks due to lua limitations.
+lolot uses a simple syntax although it does have a few quirks due to lua limitations.
 
 The first step is as always to ```require``` the file: ```require "lolot"```
 
