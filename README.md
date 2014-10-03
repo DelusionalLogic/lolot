@@ -21,7 +21,7 @@ To add functionality to your newly created class you need to place it in the nam
 To add a new local variable you simply define it within the scope, the same goes for functions. A function will dynamically have a self variable set when called, so there is no need to have it as an argument. lolot will also pull the self table into the global environment when a function is called thus eliminating most of the redundant self table references, as they are now only required when something local or global hides the variable. All of this is demonstrated in the example below:
 
 ```
-local Person = class("Person", nil, function(env, prevEnv) _ENV=env
+local Person = class.Person(function(env, prevEnv) _ENV=env
 	name = "UNKNOWN" --Notice the inline variable definition, this is part of the class
 
 	function __init__(name) --This is a special metamethod added by lolot that is called on initialization. At this point all variables defined in the namepace function can be considered initialized with the correct value.
@@ -41,7 +41,7 @@ local Person = class("Person", nil, function(env, prevEnv) _ENV=env
 	end
 _ENV=prevEnv end)
 
-local Butler = class("Butler", Person, function(env, prevEnv) _ENV=env
+local Butler = class.Butler(Person, function(env, prevEnv) _ENV=env
 	--We inherit the name variable from the superclass
 
 	function __init__(name) --If we didn't define this method it would just fall back to the superclass constructor. In this implementation it's currently superfluous.

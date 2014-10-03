@@ -1,13 +1,11 @@
-function captureGlobals(f)
+local function captureGlobals(f)
 	local newG = {}
 	local oldG = _ENV
-	_ENV = newG
 	f(newG, oldG)
-	_ENV = oldG
 	return newG
 end
 
-function splitClass(class)
+local function splitClass(class)
 	local functions = {}
 	local variables = {}
 
@@ -22,7 +20,7 @@ function splitClass(class)
 	return functions, variables
 end
 
-function deepcopy(table, dest)
+local function deepcopy(table, dest)
 	local dest = dest or {}
 
 	for k,v in pairs(table) do
@@ -40,7 +38,7 @@ end
 -------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
-function invokeWithSelf(self, fname, f, ...)
+local function invokeWithSelf(self, fname, f, ...)
 	oldSelf = _ENV["self"]
 	oldSuper = _ENV["super"]
 	local oldmt = getmetatable(_ENV)
@@ -62,13 +60,13 @@ end
 -----------------------
 -----------------------
 
-function setSelfInvoker(n, f)
+local function setSelfInvoker(n, f)
 	return function(self, ...)
 		return invokeWithSelf(self, n, f, ...)
 	end
 end
 
-function copyFunctionsTap(src, dst, tap)
+local function copyFunctionsTap(src, dst, tap)
 	for k,v in pairs(src) do
 		if type(v) == "function" then
 			dst[k] = tap(k, v)
@@ -76,7 +74,7 @@ function copyFunctionsTap(src, dst, tap)
 	end
 end
 
-function safeCallAlternative(funcName, alternative)
+local function safeCallAlternative(funcName, alternative)
 	return function(self, ...)
 		if self[funcName] then
 			return invokeWithSelf(self, funcName, self[funcName], self, ...)
@@ -86,7 +84,7 @@ function safeCallAlternative(funcName, alternative)
 	end
 end
 
-instmt = {
+local instmt = {
 	__tostring = safeCallAlternative("__tostring__", function(self, ...)
 		return ("Instance<%s>"):format(self.__name)
 	end),
@@ -106,7 +104,7 @@ instmt = {
 	__unm = safeCallAlternative("__unm__"),
 }
 
-function createMetaTbl(class, index)
+local function createMetaTbl(class, index)
 	local instMetaTblCpy = {
 		__index = index
 	}
@@ -114,7 +112,7 @@ function createMetaTbl(class, index)
 	return instMetaTblCpy
 end
 
-function allocate(class, origClass)
+local function allocate(class, origClass)
 	local baseClass = origClass or class
 
 	local inst = {
@@ -139,19 +137,19 @@ function allocate(class, origClass)
 	return inst
 end
 
-function initialize(object, ...)
+local function initialize(object, ...)
 	if object.__init__ then
 		object:__init__( ... )
 	end
 end
 
-function instantiate(class, ...)
+local function instantiate(class, ...)
 	local inst = allocate(class)
 	initialize(inst, ...)
 	return inst
 end
 
-mt = {
+local mt = {
 	__call = function(self, ...)
 		return self:new(...)
 	end,
@@ -161,7 +159,7 @@ mt = {
 	end,
 }
 
-function class(name, super, f)
+local function newClass(name, super, f)
 	local classData = captureGlobals(f)
 	local functions, variables = splitClass(classData)
 
@@ -177,3 +175,16 @@ function class(name, super, f)
 
 	return setmetatable(classTable, mt)
 end
+
+local classmt={
+	__index = function(k) return function(super, f)
+		if type(super) == "function" then
+			return newClass(k, nil, super)
+		else
+			return newClass(k, super, f)
+		end
+	end end
+}
+local class = {}
+setmetatable(class, classmt)
+return class
