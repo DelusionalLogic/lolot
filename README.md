@@ -1,7 +1,9 @@
 lolot
 =====
 
-"Lot Of Lines Of Terrible" is a different lua class system that focuses on avoiding repeated verbose statements.
+"Lot Of Lines Of Terrible" is a different lua class system that focuses on avoiding repeated verbose statements. It also provides heavy weight features with lots of overhead for faster and easier prototyping.
+
+This was a personal project, it should not be considered as anything but that.
 
 Usage
 -----
@@ -67,4 +69,4 @@ g:hello() --Prints "Hello i'm Sue, I will be your butler today"
 
 Lua also has support for metamethods. Lolot proxies that functionality out to classes. The naming of all the meta events is nearly identical. lolot suffixes them with two underscores to make them symmetric, only 3 events have been left out ```__index```, ```__newindex```, and ```__mode```. lolot also adds a new metamethod ```__init__``` which is the class constructor. This is called whenever your class is instantiated.
 
-If you inherit from any a class the parent will be instantiated with the child. No constructor is called on the parent automatically. The superclass should automatically be carried out in the functions with the self table. You can access the hidden method as ```super(args)```. This can be seen in the ````__tostring__()``` Method.
+If you inherit from any a class the parent will be instantiated with the child. No constructor is called on the parent automatically. The superclass should automatically be carried out in the functions with the self table. You can access the hidden method as ```super(args)```. This can be seen in the ```__tostring__()``` Method.
