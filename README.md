@@ -1,7 +1,9 @@
 lolot
 =====
 
-"Lot Of Lines Of Terrible" is a different lua class system that focuses on avoiding repeated verbose statements.
+"Lot Of Lines Of Terrible" is a different lua class system that focuses on avoiding repeated verbose statements. It also provides heavy weight features with lots of overhead for faster and easier prototyping.
+
+This was a personal project, it should not be considered as anything but that.
 
 Usage
 -----
